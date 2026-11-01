@@ -1,0 +1,42 @@
+const foods=[
+["Cooked white rice",130,2.7,28.2,.3,.4],["Chapati / roti",297,9.6,49.3,7.5,7.5],["Boiled egg",155,13,1.1,11,0],["Chicken breast, cooked",165,31,0,3.6,0],["Chicken curry (estimate)",150,15,5,8,1],["Cooked dal",116,9,20,.4,7.9],["Paneer",265,18.3,1.2,20.8,0],["Tofu",76,8.1,1.9,4.8,.3],["Plain curd",61,3.5,4.7,3.3,0],["Milk, toned",58,3.1,4.8,3,0],["Oats, dry",389,16.9,66.3,6.9,10.6],["Banana",89,1.1,22.8,.3,2.6],["Apple",52,.3,13.8,.2,2.4],["Almonds",579,21.2,21.6,49.9,12.5],["Boiled potato",87,1.9,20.1,.1,1.8],["Mixed vegetables, cooked",65,2.5,11, .5,3.5],["Brown bread",247,13,41,4.2,7],["Cooked fish",140,26,0,4,0],["Orange",47,.9,11.8,.1,2.4],["Coconut, fresh",354,3.3,15.2,33.5,9]
+].map((x,i)=>({id:i,name:x[0],kcal:x[1],p:x[2],c:x[3],f:x[4],fiber:x[5]}));
+const $=id=>document.getElementById(id), today=()=>new Date().toLocaleDateString('en-CA');
+let state=JSON.parse(localStorage.getItem('foodTracker')||'{"logs":{},"water":{},"weights":{},"goals":{"calories":2000,"protein":110,"carbs":220,"fat":65,"fibre":30,"water":8}}');
+let day=today(); $('day').value=day;
+function save(){localStorage.setItem('foodTracker',JSON.stringify(state));render()}
+function entries(){return state.logs[day]||[]}
+function totals(){return entries().reduce((a,e)=>{for(let k of ['kcal','p','c','f','fiber'])a[k]+=e[k]*e.qty/100;return a},{kcal:0,p:0,c:0,f:0,fiber:0})}
+function fmt(n){return Math.round(n*10)/10}
+function progress(value,goal){return goal?Math.min(100,value/goal*100):0}
+function render(){
+ let t=totals(),g=state.goals;
+ $('calories').textContent=Math.round(t.kcal);$('protein').textContent=fmt(t.p)+' g';$('carbs').textContent=fmt(t.c)+' g';$('fat').textContent=fmt(t.f)+' g';$('fibre').textContent=fmt(t.fiber)+' g';
+ let cp=progress(t.kcal,g.calories);$('calPercent').textContent=Math.round(cp)+'%';$('calBar').style.width=cp+'%';$('calRing').style.background=`conic-gradient(var(--green) ${cp*3.6}deg,#e8efeb 0deg)`;$('calRemaining').textContent=g.calories?Math.max(0,Math.round(g.calories-t.kcal))+' kcal remaining of '+g.calories+' kcal goal':'Set a calorie goal in Settings';
+ [['protein',t.p,g.protein],['carbs',t.c,g.carbs],['fat',t.f,g.fat],['fibre',t.fiber,g.fibre]].forEach(([id,v,goal])=>$(id+'Bar').style.width=progress(v,goal)+'%');
+ $('mealSections').innerHTML=['Breakfast','Lunch','Snacks','Dinner'].map(m=>{let arr=entries().filter(e=>e.meal===m);let kcal=arr.reduce((s,e)=>s+e.kcal*e.qty/100,0);return `<section class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(kcal)} kcal</span></div>${arr.length?arr.map(e=>`<div class="mealitem"><div><b>${esc(e.name)}</b><small>${e.qty} g · ${Math.round(e.kcal*e.qty/100)} kcal · P ${fmt(e.p*e.qty/100)}g</small></div><button data-del="${e.id}" aria-label="Delete ${esc(e.name)}">×</button></div>`).join(''):'<div class="empty">No food added yet</div>'}</section>`}).join('');
+ document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{state.logs[day]=entries().filter(e=>e.id!==b.dataset.del);save()});
+ let w=state.water[day]||0;$('waterCount').textContent=w;$('waterGoal').textContent=g.water;$('waterCups').innerHTML=Array.from({length:Math.max(g.water,w)},(_,i)=>`<span class="cup ${i<w?'full':''}"></span>`).join('');
+ let weight=state.weights[day];$('weightStatus').textContent=weight?`Saved today: ${weight} kg`:'Add your weight when you want to track progress.';
+ ['calories','protein','carbs','fat','fibre','water'].forEach(k=>{$('goal'+k[0].toUpperCase()+k.slice(1)).value=g[k]??''});
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('day').onchange=e=>{day=e.target.value||today();render()};
+const dlg=$('foodDialog');
+$('addBtn').onclick=()=>{dlg.showModal();updatePreview()};
+$('closeDialog').onclick=$('cancelFood').onclick=()=>dlg.close();
+$('foodSelect').innerHTML=foods.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+function selected(){return foods.find(f=>f.id===Number($('foodSelect').value))}
+function updatePreview(){let f=selected(),q=Number($('quantity').value)||0;$('foodInfo').textContent=`Per 100 g: ${f.kcal} kcal · Protein ${f.p} g · Carbs ${f.c} g · Fat ${f.f} g · Fibre ${f.fiber} g`;$('nutritionPreview').textContent=`For ${q} g: ${Math.round(f.kcal*q/100)} kcal · P ${fmt(f.p*q/100)}g · C ${fmt(f.c*q/100)}g · F ${fmt(f.f*q/100)}g · Fibre ${fmt(f.fiber*q/100)}g`}
+$('foodSelect').onchange=$('quantity').oninput=updatePreview;
+$('foodForm').onsubmit=e=>{e.preventDefault();let f=selected(),qty=Number($('quantity').value);if(!qty||qty<1)return;state.logs[day]=entries().concat({...f,meal:$('mealSelect').value,qty,id:crypto.randomUUID?crypto.randomUUID():String(Date.now())});dlg.close();save()};
+$('waterPlus').onclick=()=>{state.water[day]=(state.water[day]||0)+1;save()};$('waterMinus').onclick=()=>{state.water[day]=Math.max(0,(state.water[day]||0)-1);save()};
+$('saveWeight').onclick=()=>{let v=Number($('weightInput').value);if(v>0){state.weights[day]=v;$('weightInput').value='';save()}};
+$('saveGoals').onclick=()=>{for(let k of ['calories','protein','carbs','fat','fibre','water']){let v=Number($('goal'+k[0].toUpperCase()+k.slice(1)).value);if(v>0)state.goals[k]=v}save();alert('Goals saved')};
+$('exportBtn').onclick=()=>{let rows=[['Date','Meal','Food','Quantity g','Calories','Protein g','Carbs g','Fat g','Fibre g']];Object.entries(state.logs).forEach(([d,arr])=>arr.forEach(e=>rows.push([d,e.meal,e.name,e.qty,fmt(e.kcal*e.qty/100),fmt(e.p*e.qty/100),fmt(e.c*e.qty/100),fmt(e.f*e.qty/100),fmt(e.fiber*e.qty/100)])));download('food-log.csv',rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv')};
+$('backupBtn').onclick=()=>download('food-tracker-backup.json',JSON.stringify(state,null,2),'application/json');
+$('restoreInput').onchange=async e=>{try{let obj=JSON.parse(await e.target.files[0].text());if(!obj.logs||!obj.goals)throw Error();state=obj;save();alert('Backup restored')}catch{alert('That backup file could not be read')}e.target.value=''};
+function download(name,content,type){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();URL.revokeObjectURL(u)}
+let deferredPrompt;$('installBtn').hidden=true;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').hidden=false});$('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').hidden=true}};
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+render();

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#176b57"><meta name="description" content="Your personal food and nutrition tracker">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css"><title>My Food Tracker</title>
+</head>
+<body>
+<header><div><p class="eyebrow">YOUR DAILY NUTRITION</p><h1>My Food Tracker</h1></div><button id="installBtn" class="outline" hidden>Install app</button></header>
+<main>
+<section class="datebar"><label for="day">Track date</label><input id="day" type="date"></section>
+<section class="hero card">
+  <div class="herohead"><div><span class="muted">Calories consumed</span><div class="cal"><strong id="calories">0</strong><span>kcal</span></div></div><div class="ring" id="calRing"><span id="calPercent">0%</span></div></div>
+  <div class="progress"><span id="calBar"></span></div><p class="muted small"><span id="calRemaining">Set a calorie goal in Settings</span></p>
+  <div class="macrogrid">
+    <div><b id="protein">0 g</b><span>Protein</span><div class="mini"><i id="proteinBar"></i></div></div>
+    <div><b id="carbs">0 g</b><span>Carbs</span><div class="mini"><i id="carbsBar"></i></div></div>
+    <div><b id="fat">0 g</b><span>Fat</span><div class="mini"><i id="fatBar"></i></div></div>
+    <div><b id="fibre">0 g</b><span>Fibre</span><div class="mini"><i id="fibreBar"></i></div></div>
+  </div>
+</section>
+<section class="sectionhead"><h2>Food diary</h2><button id="addBtn">＋ Add food</button></section>
+<div id="mealSections"></div>
+<section class="card">
+ <h2>Water intake</h2><div class="waterrow"><div><strong id="waterCount">0</strong><span class="muted"> / <span id="waterGoal">8</span> glasses</span></div><div><button class="outline" id="waterMinus">−</button> <button id="waterPlus">＋ Glass</button></div></div>
+ <div id="waterCups" class="cups"></div>
+</section>
+<section class="card">
+ <h2>Weight check-in</h2><div class="inlineform"><input id="weightInput" type="number" step=".1" placeholder="Weight in kg"><button id="saveWeight">Save</button></div><p class="muted small" id="weightStatus">Add your weight when you want to track progress.</p>
+</section>
+<section class="card">
+ <details><summary>Goals & settings</summary>
+ <p class="muted small">Set your own targets. These are personal tracking goals, not medical advice.</p>
+ <div class="settingsgrid">
+ <label>Calories (kcal)<input id="goalCalories" type="number" min="0" placeholder="e.g. 2000"></label>
+ <label>Protein (g)<input id="goalProtein" type="number" min="0" placeholder="e.g. 110"></label>
+ <label>Carbs (g)<input id="goalCarbs" type="number" min="0" placeholder="e.g. 220"></label>
+ <label>Fat (g)<input id="goalFat" type="number" min="0" placeholder="e.g. 65"></label>
+ <label>Fibre (g)<input id="goalFibre" type="number" min="0" placeholder="e.g. 30"></label>
+ <label>Water glasses<input id="goalWater" type="number" min="1" placeholder="8"></label>
+ </div><button id="saveGoals">Save goals</button>
+ </details>
+</section>
+<section class="card tools"><h2>Your data</h2><p class="muted small">Your entries are saved on this phone/browser. Export a backup regularly.</p><button class="outline" id="exportBtn">Export food log (CSV)</button> <button class="outline" id="backupBtn">Backup data (JSON)</button><label class="filebtn outline">Restore backup<input id="restoreInput" type="file" accept="application/json"></label></section>
+<footer>Nutrition values are estimates. Check food labels and adjust portions where possible.</footer>
+</main>
+<nav class="bottomnav"><a href="#mealSections">Diary</a><a href="#waterCount">Water</a><a href="#goalCalories">Goals</a></nav>
+<dialog id="foodDialog">
+<form method="dialog" id="foodForm">
+<div class="dialoghead"><h2>Add food</h2><button type="button" class="x" id="closeDialog">×</button></div>
+<label>Food<select id="foodSelect"></select></label>
+<div class="foodinfo" id="foodInfo"></div>
+<label>Meal<select id="mealSelect"><option>Breakfast</option><option>Lunch</option><option>Snacks</option><option>Dinner</option></select></label>
+<label>Quantity (grams)<input id="quantity" type="number" min="1" value="100" required></label>
+<div class="preview" id="nutritionPreview">0 kcal · P 0g · C 0g · F 0g</div>
+<div class="actions"><button type="button" class="outline" id="cancelFood">Cancel</button><button type="submit" id="saveFood">Add to diary</button></div>
+</form>
+</dialog>
+<script src="app.js"></script>
+</body></html>
