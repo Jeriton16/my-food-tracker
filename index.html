@@ -43,6 +43,23 @@
  </div><button id="saveGoals">Save goals</button>
  </details>
 </section>
+<section class="card" id="reminderCard">
+ <details open><summary>🔔 Reminders</summary>
+ <p class="muted small">Choose meal, water and diary reminders. Allow notifications when your phone asks.</p>
+ <div class="settingsgrid">
+  <label><span><input id="remBreakfastOn" type="checkbox" checked> Breakfast reminder</span><input id="remBreakfastTime" type="time" value="08:00"></label>
+  <label><span><input id="remLunchOn" type="checkbox" checked> Lunch reminder</span><input id="remLunchTime" type="time" value="12:30"></label>
+  <label><span><input id="remSnackOn" type="checkbox" checked> Snack reminder</span><input id="remSnackTime" type="time" value="16:00"></label>
+  <label><span><input id="remDinnerOn" type="checkbox" checked> Dinner reminder</span><input id="remDinnerTime" type="time" value="20:30"></label>
+  <label><span><input id="remBedOn" type="checkbox" checked> Bedtime diary reminder</span><input id="remBedTime" type="time" value="22:00"></label>
+  <label>Water reminder<select id="remWaterEvery"><option value="30" selected>Every 30 minutes</option><option value="60">Every hour</option><option value="90">Every 90 minutes</option><option value="120">Every 2 hours</option></select></label>
+  <label>Water reminders start<input id="remWaterStart" type="time" value="08:30"></label>
+  <label>Water reminders end<input id="remWaterEnd" type="time" value="21:30"></label>
+ </div>
+ <p class="muted small" id="reminderStatus">Reminders are not enabled yet.</p>
+ <button id="enableReminders">Enable notifications & save reminders</button>
+ </details>
+</section>
 <section class="card tools"><h2>Your data</h2><p class="muted small">Your entries are saved on this phone/browser. Export a backup regularly.</p><button class="outline" id="exportBtn">Export food log (CSV)</button> <button class="outline" id="backupBtn">Backup data (JSON)</button><label class="filebtn outline">Restore backup<input id="restoreInput" type="file" accept="application/json"></label></section>
 <footer>Nutrition values are estimates. Check food labels and adjust portions where possible.</footer>
 </main>
