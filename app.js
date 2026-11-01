@@ -1,8 +1,9 @@
 const foods=[
-["Cooked white rice",130,2.7,28.2,.3,.4],["Chapati / roti",297,9.6,49.3,7.5,7.5],["Boiled egg",155,13,1.1,11,0],["Chicken breast, cooked",165,31,0,3.6,0],["Chicken curry (estimate)",150,15,5,8,1],["Cooked dal",116,9,20,.4,7.9],["Paneer",265,18.3,1.2,20.8,0],["Tofu",76,8.1,1.9,4.8,.3],["Plain curd",61,3.5,4.7,3.3,0],["Milk, toned",58,3.1,4.8,3,0],["Oats, dry",389,16.9,66.3,6.9,10.6],["Banana",89,1.1,22.8,.3,2.6],["Apple",52,.3,13.8,.2,2.4],["Almonds",579,21.2,21.6,49.9,12.5],["Boiled potato",87,1.9,20.1,.1,1.8],["Mixed vegetables, cooked",65,2.5,11, .5,3.5],["Brown bread",247,13,41,4.2,7],["Cooked fish",140,26,0,4,0],["Orange",47,.9,11.8,.1,2.4],["Coconut, fresh",354,3.3,15.2,33.5,9]
+["Cooked white rice",130,2.7,28.2,.3,.4],["Brown rice, cooked",123,2.7,25.6,1,.4],["Chapati / whole-wheat roti",297,9.6,49.3,7.5,7.5],["Ragi porridge, cooked",65,1.5,13.5,.7,2.2],["Oats, dry",389,16.9,66.3,6.9,10.6],["Boiled egg",155,13,1.1,11,0],["Chicken breast, cooked",165,31,0,3.6,0],["Chicken curry (estimate)",150,15,5,8,1],["Cooked sardines",208,24.6,0,11.5,0],["Cooked mackerel",205,19,0,13.9,0],["Cooked fish",140,26,0,4,0],["Cooked dal",116,9,20,.4,7.9],["Chickpeas, boiled",164,8.9,27.4,2.6,7.6],["Moong sprouts",30,3,5.9,.2,1.8],["Paneer",265,18.3,1.2,20.8,0],["Tofu",76,8.1,1.9,4.8,.3],["Plain curd",61,3.5,4.7,3.3,0],["Milk, toned",58,3.1,4.8,3,0],["Banana",89,1.1,22.8,.3,2.6],["Apple",52,.3,13.8,.2,2.4],["Orange",47,.9,11.8,.1,2.4],["Guava",68,2.6,14.3,1,5.4],["Papaya",43,.5,10.8,.3,1.7],["Watermelon",30,.6,7.6,.2,.4],["Pomegranate",83,1.7,18.7,1.2,4],["Tomato",18,.9,3.9,.2,1.2],["Beetroot",43,1.6,9.6,.2,2.8],["Carrot",41,.9,9.6,.2,2.8],["Pumpkin",26,1,6.5,.1,.5],["Red capsicum",31,1,6,.3,2.1],["Green capsicum",20,.9,4.6,.2,1.7],["Spinach",23,2.9,3.6,.4,2.2],["Broccoli",34,2.8,6.6,.4,2.6],["Cabbage",25,1.3,5.8,.1,2.5],["Purple cabbage",31,1.4,7.4,.2,2.1],["Cucumber",15,.7,3.6,.1,.5],["Okra / bhindi",33,1.9,7.5,.2,3.2],["Brinjal",25,1,5.9,.2,3],["Sweet corn, boiled",96,3.4,21,.8,2.4],["Almonds",579,21.2,21.6,49.9,12.5],["Walnuts",654,15.2,13.7,65.2,6.7],["Peanuts",567,25.8,16.1,49.2,8.5],["Flaxseed",534,18.3,28.9,42.2,27.3],["Chia seeds",486,16.5,42.1,30.7,34.4],["Sesame seeds",573,17.7,23.4,49.7,11.8],["Boiled potato",87,1.9,20.1,.1,1.8],["Mixed vegetables, cooked",65,2.5,11,.5,3.5],["Brown bread",247,13,41,4.2,7],["Coconut, fresh",354,3.3,15.2,33.5,9]
 ].map((x,i)=>({id:i,name:x[0],kcal:x[1],p:x[2],c:x[3],f:x[4],fiber:x[5]}));
 const $=id=>document.getElementById(id), today=()=>new Date().toLocaleDateString('en-CA');
-let state=JSON.parse(localStorage.getItem('foodTracker')||'{"logs":{},"water":{},"weights":{},"goals":{"calories":2000,"protein":110,"carbs":220,"fat":65,"fibre":30,"water":8}}');
+let state=JSON.parse(localStorage.getItem('foodTracker')||'{"logs":{},"water":{},"weights":{},"customFoods":[],"goals":{"calories":2000,"protein":110,"carbs":220,"fat":65,"fibre":30,"water":8}}');
+state.customFoods=state.customFoods||[];
 let day=today(); $('day').value=day;
 function save(){localStorage.setItem('foodTracker',JSON.stringify(state));render()}
 function entries(){return state.logs[day]||[]}
@@ -25,10 +26,14 @@ $('day').onchange=e=>{day=e.target.value||today();render()};
 const dlg=$('foodDialog');
 $('addBtn').onclick=()=>{dlg.showModal();updatePreview()};
 $('closeDialog').onclick=$('cancelFood').onclick=()=>dlg.close();
-$('foodSelect').innerHTML=foods.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
-function selected(){return foods.find(f=>f.id===Number($('foodSelect').value))}
+function allFoods(){return foods.concat(state.customFoods)}
+function populateFoods(selectedId){$('foodSelect').innerHTML=allFoods().map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');if(selectedId!==undefined)$('foodSelect').value=String(selectedId)}
+populateFoods();
+function selected(){return allFoods().find(f=>String(f.id)===String($('foodSelect').value))}
 function updatePreview(){let f=selected(),q=Number($('quantity').value)||0;$('foodInfo').textContent=`Per 100 g: ${f.kcal} kcal · Protein ${f.p} g · Carbs ${f.c} g · Fat ${f.f} g · Fibre ${f.fiber} g`;$('nutritionPreview').textContent=`For ${q} g: ${Math.round(f.kcal*q/100)} kcal · P ${fmt(f.p*q/100)}g · C ${fmt(f.c*q/100)}g · F ${fmt(f.f*q/100)}g · Fibre ${fmt(f.fiber*q/100)}g`}
 $('foodSelect').onchange=$('quantity').oninput=updatePreview;
+$('newFoodBtn').onclick=()=>{$('customFoodFields').hidden=!$('customFoodFields').hidden};
+$('saveCustomFood').onclick=()=>{let name=$('customName').value.trim();let vals=['Kcal','Protein','Carbs','Fat','Fibre'].map(k=>Number($('custom'+k).value));if(!name||vals.some(v=>!Number.isFinite(v)||v<0)){alert('Please enter a food name and all five nutrition values.');return}let f={id:'custom-'+Date.now(),name,kcal:vals[0],p:vals[1],c:vals[2],f:vals[3],fiber:vals[4]};state.customFoods.push(f);save();populateFoods(f.id);$('customFoodFields').hidden=true;$('customName').value='';['Kcal','Protein','Carbs','Fat','Fibre'].forEach(k=>$('custom'+k).value='');updatePreview()};
 $('foodForm').onsubmit=e=>{e.preventDefault();let f=selected(),qty=Number($('quantity').value);if(!qty||qty<1)return;state.logs[day]=entries().concat({...f,meal:$('mealSelect').value,qty,id:crypto.randomUUID?crypto.randomUUID():String(Date.now())});dlg.close();save()};
 $('waterPlus').onclick=()=>{state.water[day]=(state.water[day]||0)+1;save()};$('waterMinus').onclick=()=>{state.water[day]=Math.max(0,(state.water[day]||0)-1);save()};
 $('saveWeight').onclick=()=>{let v=Number($('weightInput').value);if(v>0){state.weights[day]=v;$('weightInput').value='';save()}};

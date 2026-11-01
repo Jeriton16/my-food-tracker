@@ -10,6 +10,7 @@
 <header><div><p class="eyebrow">YOUR DAILY NUTRITION</p><h1>My Food Tracker</h1></div><button id="installBtn" class="outline" hidden>Install app</button></header>
 <main>
 <section class="datebar"><label for="day">Track date</label><input id="day" type="date"></section>
+<section class="card"><details><summary>🌈 7-day rainbow meal ideas</summary><p class="muted small">Use these as mix-and-match ideas. Add the portions you actually eat in your diary. Choose water, unsweetened drinks and modest amounts of oil; vary vegetables and fruit through the week.</p><div class="menuweek"><p><b>Day 1</b> — Breakfast: oats, milk, banana and chia. Lunch: rice, Goan fish curry, spinach and tomato. Snack: guava and a few almonds. Dinner: chapati, moong dal, carrot and cucumber salad.</p><p><b>Day 2</b> — Breakfast: 2 eggs, whole-wheat toast and orange. Lunch: chicken curry, rice, beetroot and cabbage. Snack: plain curd and papaya. Dinner: ragi bhakri, chickpea curry and green beans.</p><p><b>Day 3</b> — Breakfast: idli with sambar. Lunch: sardines, rice, pumpkin and purple cabbage. Snack: apple and walnuts. Dinner: tofu or paneer bhurji, chapati and tomato-cucumber salad.</p><p><b>Day 4</b> — Breakfast: vegetable omelette and toast. Lunch: brown rice, dal, okra and carrot. Snack: banana and curd. Dinner: grilled chicken, sweet potato or regular potato, broccoli and capsicum.</p><p><b>Day 5</b> — Breakfast: ragi porridge, milk and papaya. Lunch: prawn or fish curry, rice, spinach and beetroot. Snack: roasted chana and orange. Dinner: mixed bean usal, chapati and cucumber salad.</p><p><b>Day 6</b> — Breakfast: oats with apple, flaxseed and curd. Lunch: chicken xacuti (moderate coconut/oil), rice and cabbage salad. Snack: guava and peanuts. Dinner: dal khichdi with pumpkin and green vegetables.</p><p><b>Day 7</b> — Breakfast: moong chilla with curd. Lunch: mackerel, rice, tomato and leafy greens. Snack: seasonal fruit and almonds. Dinner: tofu/paneer or egg curry, chapati and mixed vegetables.</p></div><p class="muted small"><b>Rainbow guide:</b> red (tomato, beetroot), orange/yellow (carrot, pumpkin, papaya), green (spinach, broccoli, okra), blue/purple (purple cabbage, brinjal), white/brown (banana, onion, beans, whole grains). Rotate colours rather than chasing a perfect plate every day.</p></details></section>
 <section class="hero card">
   <div class="herohead"><div><span class="muted">Calories consumed</span><div class="cal"><strong id="calories">0</strong><span>kcal</span></div></div><div class="ring" id="calRing"><span id="calPercent">0%</span></div></div>
   <div class="progress"><span id="calBar"></span></div><p class="muted small"><span id="calRemaining">Set a calorie goal in Settings</span></p>
@@ -51,6 +52,18 @@
 <div class="dialoghead"><h2>Add food</h2><button type="button" class="x" id="closeDialog">×</button></div>
 <label>Food<select id="foodSelect"></select></label>
 <div class="foodinfo" id="foodInfo"></div>
+<button type="button" class="outline" id="newFoodBtn">＋ Create a new food</button>
+<div id="customFoodFields" hidden class="customfood">
+<label>Food name<input id="customName" type="text" placeholder="e.g. Goan fish curry"></label>
+<p class="muted small">Enter nutrition values per 100 g (check the food label or use a reliable nutrition source).</p>
+<div class="settingsgrid">
+<label>Calories (kcal)<input id="customKcal" type="number" min="0" step="0.1" required></label>
+<label>Protein (g)<input id="customProtein" type="number" min="0" step="0.1" required></label>
+<label>Carbs (g)<input id="customCarbs" type="number" min="0" step="0.1" required></label>
+<label>Fat (g)<input id="customFat" type="number" min="0" step="0.1" required></label>
+<label>Fibre (g)<input id="customFibre" type="number" min="0" step="0.1" required></label>
+</div><button type="button" id="saveCustomFood">Save this food</button>
+</div>
 <label>Meal<select id="mealSelect"><option>Breakfast</option><option>Lunch</option><option>Snacks</option><option>Dinner</option></select></label>
 <label>Quantity (grams)<input id="quantity" type="number" min="1" value="100" required></label>
 <div class="preview" id="nutritionPreview">0 kcal · P 0g · C 0g · F 0g</div>
